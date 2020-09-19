@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.IOrderDetailDao">
+    <insert id="addOrderDetail" keyProperty="id" keyColumn="id" useGeneratedKeys="true" parameterType="com.example.demo.pojo.OrderDetail">
+        insert into orderDetail(orderId, commodityId, amount) values(#{orderId}, #{commodityId}, #{amount})
+    </insert>
+    
+    <update id="updateOrderDetail" parameterType="com.example.demo.pojo.OrderDetail">
+        <if test="id!=null">
+            update orderDetail
+            <set>
+                <if test="commodityId!=null and commodityId!=''">
+                    commodityId=#{commodityId}
+                </if>
+                <if test="amount!=null and amount!=''">
+                    amount=#{amount}
+                </if>
+            </set>
+            where id= #{id}
+        </if>
+    </update>
+
+    <select id="find" parameterType="integer" resultType="com.example.demo.model.Count">
+        select sum(amount) as sumAmount,createDate as cdate from orderDetail where commodityId=#{commodityId} group by createDate order by createDate desc limit 0,7;
+    </select>
+
+</mapper>

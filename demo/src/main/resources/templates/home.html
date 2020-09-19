@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Demo</title>
+    <link rel="stylesheet" type="text/css" href="./plugins/jquery-easyui-1.7.0/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="./plugins/jquery-easyui-1.7.0/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="./plugins/jquery-easyui-1.7.0/themes/color.css">
+    <link rel="stylesheet" type="text/css" href="./plugins/jquery-easyui-1.7.0/demo/demo.css">
+    <script type="text/javascript" src="./plugins/jquery-easyui-1.7.0/jquery.min.js"></script>
+    <script type="text/javascript" src="./plugins/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="./plugins/plugin/dist/echarts.js"></script>
+<!--    <script type="text/javascript" src="./plugins/plugin/dist/echarts.simple.min.js"></script>-->
+    <script type="text/javascript" src="./plugins/plugin/dist/echarts.min.js"></script>
+<!--    <script type="text/javascript" src="./plugins/plugin/dist/echarts.common.min.js"></script>-->
+
+</head>
+<body>
+<h2>Demo</h2>
+<input id="search" type="text" class="easyui-searchbox" width="600px" />
+<br/>
+<!--商品信息-->
+<table id="dg" class="easyui-datagrid" style="width:700px;height:250px"
+       url="getCommodity"
+       toolbar="#toolbar" pagination="true"
+       rownumbers="true" fitColumns="true" singleSelect="true">
+    <thead>
+    <tr>
+        <th data-options="field:'commodityNo'"  width="50">商品的编号</th>
+        <th data-options="field:'commodityName'"  width="50">商品的名称</th>
+        <th data-options="field:'price'"  width="50">商品的价格</th>
+        <th data-options="field:'typeName'"  width="50">商品类别</th>
+    </tr>
+    </thead>
+</table>
+<!--功能bar-->
+<div id="toolbar">
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="add()">添加商品</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="edit()">编辑商品</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroy()">删除商品</a>
+</div>
+
+<!--增改-->
+<div id="dlg" class="easyui-dialog" style="width:400px" data-options="closed:true,modal:true,border:'thin',buttons:'#dlg-buttons'">
+    <form id="fm" method="post" novalidate style="margin:0;padding:20px 50px">
+        <h3>商品信息</h3>
+        <input name="id" required="true" style="display:none" >
+        <div style="margin-bottom:10px">
+            <input name="commodityNo" class="easyui-textbox" required="true" label="商品编号:" style="width:100%">
+        </div>
+        <div style="margin-bottom:10px">
+            <input name="commodityName" class="easyui-textbox" required="true" label="商品名称:" style="width:100%">
+        </div>
+        <div style="margin-bottom:10px">
+            <input name="price" class="easyui-textbox" required="true" label="商品价格:" style="width:100%">
+        </div>
+        <div style="margin-bottom:10px">
+            <input name="typeId" required="true" style="display:none" >
+            <input id="type" name="typeName" class="easyui-combobox"  required="true" label="商品类别:" style="width:100%">
+        </div>
+    </form>
+</div>
+<div id="dlg-buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="save()" style="width:90px">Save</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')" style="width:90px">Cancel</a>
+</div>
+
+<!--折线图-->
+<div id="tuxiang" class="easyui-dialog" data-options="closed:true" style="width: 500px;height:500px;padding-top: 50px;">
+</div>
+
+<script type="text/javascript">
+    var url;
+    $(document).ready(function(){
+        init();
+    });
+    // 初始化函数，将商品类别读取出来
+    function init() {
+        getType();
+    }
+    //增加商品信息
+    function add(){
+        $('#dlg').dialog('open').dialog('center').dialog('setTitle','添加商品信息');
+        $('#fm').form('clear');
+        url = '/addCommodity';
+    }
+
+    //修改商品信息
+    function edit(){
+        var row = $('#dg').datagrid('getSelected');
+        if (row){
+            $('#dlg').dialog('open').dialog('center').dialog('setTitle','编辑商品信息');
+            $('#fm').form('load',row);
+            url = '/updateCommodity';
+        }
+    }
+
+    //保存商品信息
+    function save(){
+        var data={};
+        data.id=$("input[name='id']").val();
+        data.commodityNo=$("input[name='commodityNo']").val();
+        data.commodityName=$("input[name='commodityName']").val();
+        data.price=$("input[name='price']").val();
+        data.typeId=$("input[name='typeName']").val();
+        var reg = new RegExp("^[0-9]*$");
+        if (!reg.test(data.typeId)) {
+            data.typeId=$("input[name='typeId']").val();
+        }
+        console.log(data)
+        $.ajax({
+            contentType: 'application/json',
+            type: 'POST',
+            url: url,
+            dataType: "json",
+            data: JSON.stringify(data),
+            success: function (result) {
+                if (result.state){
+                    $('#dlg').dialog('close');
+                    $('#dg').datagrid('reload');
+                } else {
+                    $.messager.show({	// show error message
+                        title: 'Error',
+                        msg: '出错！'
+                    });
+                }
+        }
+
+    });
+    }
+    //删除商品信息
+    function destroy(){
+        var row = $('#dg').datagrid('getSelected');
+        if (row){
+            $.messager.confirm('Confirm','Are you sure you want to destroy this commodity?',function(r){
+                if (r){
+                    $.post('/delete',{id:row.id},function(result){
+                        if (result.state){
+                            $('#dg').datagrid('reload');	// reload the user data
+                        } else {
+                            $.messager.show({	// show error message
+                                title: 'Error',
+                                msg: '错误!'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    //获得商品类别
+    function getType() {
+        $.get('/getType',{},function (result) {
+            console.log(result);
+            var data=result.data;
+            var datas=[];
+            for (var i=0;i<data.length;i++) {
+                datas.push({
+                    'id':data[i].id,
+                    'typeName':data[i].typeName
+                })
+            }
+            $('#type').combobox({
+                data : datas,
+                valueField:'id',
+                textField:'typeName'
+            });
+        });
+
+    }
+
+
+    $('#search').searchbox({
+        searcher:function(value,name){
+            getDataByNo(value);
+        },
+        prompt:'Please Input Value'
+    });
+
+    // 模糊 查询
+    function getDataByNo(no) {
+        $.get('/getCommodityByNo',{no:no},function (result) {
+
+            $("#dg").datagrid({data:result.rows,total:result.total});
+        });
+    }
+
+
+</script>
+
+
+<script type="text/javascript">
+    $('#dg').datagrid({
+        onDblClickCell: function(index,field,value){
+            var row = $('#dg').datagrid('getSelected');
+            getCommdityCount(row);
+        }
+    });
+    function loadtuxiang(data1,date1,subtext) {
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('tuxiang'));
+        // 指定图表的配置项和数据
+        var option = {
+            title:{
+                text:subtext,
+                subtext:'销售量/时间'
+            },
+            xAxis: {
+                data: date1
+            },
+            yAxis: {
+            },
+            series: [{
+                data: data1,
+                type: 'line'
+            }]
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+        $('#tuxiang').dialog('open').dialog('center').dialog('setTitle','图表');
+    }
+    function getCommdityCount(row) {
+        if (row){
+            $.get('/getCommodityCount',{id:row.id},function(result){
+                var date1=[];
+                var data1=[];
+                var data = result.data;
+                for (var i=0;i<data.length;i++) {
+                    date1[i]=data[i].cdate
+                    data1[i]=data[i].sumAmount
+                }
+                loadtuxiang(data1,date1,row.commodityName)
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

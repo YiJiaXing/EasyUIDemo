@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.IOrderStatusDao">
+    <insert id="addOrderStatus" useGeneratedKeys="true" keyColumn="id" keyProperty="id" parameterType="com.example.demo.pojo.OrderStatus">
+        insert into orderStatus(statusName) values (#{statusName})
+    </insert>
+    <update id="updateOrderStatus">
+        update orderStatus
+        <set>
+            <if test="id!=null">
+                <if test="statusName!=null and statusName!=''">
+                    statusName=#{statusName}
+                </if>
+            </if>
+        </set>
+        where id =#{id}
+    </update>
+
+    <select id="findOrderStatuses" resultType="com.example.demo.pojo.OrderStatus">
+        select * from orderStatus order by id limit #{num},#{size}
+    </select>
+
+</mapper>

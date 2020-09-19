@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.ICommodityAndTypeDao">
+    <sql id="CommodityAndType">
+        commodity.id, commodityNo, commodityName, price, typeId, typeName
+    </sql>
+    
+    <select id="findCommodityAndTypeById" resultType="com.example.demo.model.CommodityAndType">
+        select
+        <include refid="CommodityAndType"></include>
+        from commodity, commodityType where commodity.id= #{id} and typeId=commodityType.id
+    </select>
+
+    <select id="findCommodityAndTypeAll" resultType="com.example.demo.model.CommodityAndType">
+        select
+        <include refid="CommodityAndType"></include>
+        from commodity, commodityType where typeId=commodityType.id order by commodity.id;
+    </select>
+
+    <select id="findCommodityAndTypeLikeByNo" resultType="com.example.demo.model.CommodityAndType">
+        select
+        <include refid="CommodityAndType"></include>
+        from commodity, commodityType where typeId=commodityType.id and commodityNo like #{no} order by commodity.id;
+    </select>
+    
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.ICommodityTypeDao">
+    <insert id="addCommodityType"  keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="com.example.demo.pojo.CommodityType">
+        insert into commodityType(typeName) values (#{typeName})
+    </insert>
+    
+    <update id="updateCommodityType" parameterType="com.example.demo.pojo.Commodity">
+        update commodityType set typeName = #{typeName} where id = #{id}
+    </update>
+    
+    <select id="findCommodityType" resultType="com.example.demo.pojo.CommodityType">
+        select * from commodityType order by id limit #{num},#{size}
+    </select>
+    
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.ICommodityDao">
+
+    <insert id="addCommodity" keyColumn="id" useGeneratedKeys="true" keyProperty="id" statementType="PREPARED" parameterType="com.example.demo.pojo.Commodity">
+        insert into commodity(commodityNo, commodityName, price, typeId) values(#{commodityNo}, #{commodityName}, #{price}, #{typeId})
+    </insert>
+    <update id="updateCommodity" parameterType="com.example.demo.pojo.Commodity">
+        update commodity set commodityNo= #{commodityNo}, commodityName= #{commodityName}, price= #{price}, typeId= #{typeId} where id = #{id}
+    </update>
+
+    <delete id="delCommodity" parameterType="integer">
+        delete from commodity where id= #{id}
+    </delete>
+
+</mapper>

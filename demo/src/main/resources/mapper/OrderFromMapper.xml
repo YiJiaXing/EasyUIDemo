@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.IOrderFromDao">
+    <insert id="addOrderFrom" keyColumn="id" useGeneratedKeys="true" keyProperty="id" parameterType="com.example.demo.pojo.OrderForm">
+        insert into orderFrom (orderNo, statusId, createDate, accomplishDate) values(#{orderNo}, #{statusId}, #{createDate}, #{accomplishDate})
+    </insert>
+    <update id="updateOrderFrom" parameterType="com.example.demo.pojo.OrderForm">
+        <if test="id!=null">
+            update orderFrom
+            <set>
+                <if test="statusId!=null and statusId!=''">
+                    statusId=#{statusId}
+                </if>
+                <if test="accomplishDate!=null and accomplishDate!=''">
+                    accomplishDate=#{accomplishDate}
+                </if>
+            </set>
+            where id= #{id}
+        </if>
+    </update>
+</mapper>
